@@ -33,12 +33,14 @@ defmodule Hangman.Impl.Game do
 
   @spec make_move(t, String.t) :: { t, Type.tally }
   def make_move(game = %{ game_state: state }, _guess) when state in [:won, :lost] do
+    IO.puts("make_move :won/:lost")
     game
     |> return_with_tally()
   end
 
   @spec make_move(t, String.t) :: { t, Type.tally }
   def make_move(game, guess) do
+    IO.puts("make_move other")
     accept_guess(game, guess, MapSet.member?(game.used, guess))
     |> return_with_tally()
   end
@@ -46,12 +48,40 @@ defmodule Hangman.Impl.Game do
   ##################################################
 
   defp accept_guess(game, _guess, _already_used = true) do
+    IO.puts("accept_guess already_used==true")
     %{ game | game_state: :already_used }
   end
 
   defp accept_guess(game, guess, _already_used) do
+    IO.puts("accept_guess !already_used: " <> guess)
     %{ game | used: MapSet.put(game.used, guess) }
+    |> score_guess(Enum.member?(game.letters, guess))
   end
+
+  ##################################################
+
+  # Score Good Guess
+  @spec score_guess(t, true) :: { t }
+  defp score_guess(game, _good_guess = true) do
+    # if all letters guessed --> :won | :good_guess
+    IO.puts("score_guess used:")
+    Enum.each(game.used, fn x -> IO.puts(x) end)
+    new_state = won_or_good_guess(MapSet.subset?(MapSet.new(game.letters), game.used))
+    %{ game | game_state: new_state }
+  end
+
+  # Score Bad Guess, no turns left
+  @spec score_guess(t, false) :: { t }
+  defp score_guess(game = %{ turns_left: 1 }, _good_guess) do
+    %{ game | turns_left: 0, game_state: :lost }
+  end
+
+  # Score Bad Guess, turns left still
+  @spec score_guess(t, false) :: { t }
+  defp score_guess(game, _good_guess) do
+    %{ game | turns_left: game.turns_left - 1, game_state: :bad_guess }
+  end
+
 
   ##################################################
 
@@ -67,4 +97,7 @@ defmodule Hangman.Impl.Game do
   defp return_with_tally(game) do
     { game, tally(game)}
   end
+
+  defp won_or_good_guess(_all_guessed = true), do: :won
+  defp won_or_good_guess(_all_guessed), do: :good_guess
 end
