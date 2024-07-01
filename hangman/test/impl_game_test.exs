@@ -189,6 +189,22 @@ defmodule ImplGameTest do
     |> test_moves("cat")
   end
 
+  test "sequence of moves cat loser" do
+    [
+      ["c", :good_guess, 7, ["c", "_", "_"], ["c"]],
+      ["z", :bad_guess, 6, ["c", "_", "_"], ["c", "z"]],
+      ["a", :good_guess, 6, ["c", "a", "_"], ["c", "z", "a"]],
+      ["x", :bad_guess, 5, ["c", "a", "_"], ["c", "z", "a", "x"]],
+      ["a", :already_used, 5, ["c", "a", "_"], ["c", "z", "a", "x"]],
+      ["e", :bad_guess, 4, ["c", "a", "_"], ["c", "z", "a", "x", "e"]],
+      ["f", :bad_guess, 3, ["c", "a", "_"], ["c", "z", "a", "x", "e", "f"]],
+      ["g", :bad_guess, 2, ["c", "a", "_"], ["c", "z", "a", "x", "e", "f", "g"]],
+      ["h", :bad_guess, 1, ["c", "a", "_"], ["c", "z", "a", "x", "e", "f", "g", "h"]],
+      ["i", :lost, 0, ["c", "a", "_"], ["c", "z", "a", "x", "e", "f", "g", "h", "i"]],
+    ]
+    |> test_moves("cat")
+  end
+
   def test_moves(script, word) do
     game = Game.new_game(word)
     Enum.reduce(script, game, &check_one_move/2)
