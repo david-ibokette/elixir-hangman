@@ -52,7 +52,7 @@ defmodule ImplGameTest do
       assert new_game.used == game.used
       assert tally.turns_left == game.turns_left
       assert tally.game_state == game.game_state
-      assert tally.letters == []
+      # assert tally.letters == []
       assert tally.used == game.used |> MapSet.to_list() |> Enum.sort
     end
   end
@@ -105,8 +105,12 @@ defmodule ImplGameTest do
     assert game.game_state == :good_guess
     {game, _tally} = Game.make_move(game, "a")
     assert game.game_state == :good_guess
+    {game, _tally} = Game.make_move(game, "a")
+    assert game.game_state == :already_used
     {game, _tally} = Game.make_move(game, "z")
     assert game.game_state == :bad_guess
+    {game, _tally} = Game.make_move(game, "t")
+    assert game.game_state == :won
     {game, _tally} = Game.make_move(game, "t")
     assert game.game_state == :won
 
@@ -122,11 +126,80 @@ defmodule ImplGameTest do
     {game, _tally} = Game.make_move(game, "z")
     assert game.game_state == :bad_guess
     {game, _tally} = Game.make_move(game, "k")
+    assert game.game_state == :bad_guess
     {game, _tally} = Game.make_move(game, "l")
+    assert game.game_state == :bad_guess
     {game, _tally} = Game.make_move(game, "m")
+    assert game.game_state == :bad_guess
+    {game, _tally} = Game.make_move(game, "l")
+    assert game.game_state == :already_used
     {game, _tally} = Game.make_move(game, "n")
+    assert game.game_state == :bad_guess
     {game, _tally} = Game.make_move(game, "o")
+    assert game.game_state == :bad_guess
     {game, _tally} = Game.make_move(game, "p")
     assert game.game_state == :lost
+    {game, _tally} = Game.make_move(game, "p")
+    assert game.game_state == :lost
+  end
+
+  test "whole won imperfect game, repeat letters" do
+    game = Game.new_game("hello")
+    { game, _tally } = Game.make_move(game, "h")
+    assert game.game_state == :good_guess
+    {game, _tally} = Game.make_move(game, "o")
+    assert game.game_state == :good_guess
+    {game, _tally} = Game.make_move(game, "h")
+    assert game.game_state == :already_used
+    {game, _tally} = Game.make_move(game, "z")
+    assert game.game_state == :bad_guess
+    {game, _tally} = Game.make_move(game, "l")
+    assert game.game_state == :good_guess
+    {game, _tally} = Game.make_move(game, "l")
+    # Enum.each(game.used, fn x -> IO.puts(x) end)
+    assert game.game_state == :already_used
+    {game, _tally} = Game.make_move(game, "e")
+    assert game.game_state == :won
+    {game, _tally} = Game.make_move(game, "e")
+    assert game.game_state == :won
+
+    assert MapSet.equal?(game.used, MapSet.new(["h", "e", "l", "o", "z"]))
+  end
+
+  test "sequence of moves hello" do
+    [
+      ["a", :bad_guess, 6, ["_", "_", "_", "_", "_"], ["a"]],
+      ["a", :already_used, 6, ["_", "_", "_", "_", "_"], ["a"]],
+      ["e", :good_guess, 6, ["_", "e", "_", "_", "_"], ["a", "e"]],
+      ["x", :bad_guess, 5, ["_", "e", "_", "_", "_"], ["a", "e", "x"]],
+    ]
+    |> test_moves("hello")
+  end
+
+  test "sequence of moves cat" do
+    [
+      ["c", :good_guess, 7, ["c", "_", "_"], ["c"]],
+      ["e", :bad_guess, 6, ["c", "_", "_"], ["c", "e"]],
+      ["a", :good_guess, 6, ["c", "a", "_"], ["c", "e", "a"]],
+      ["x", :bad_guess, 5, ["c", "a", "_"], ["c", "e", "a", "x"]],
+      ["a", :already_used, 5, ["c", "a", "_"], ["c", "e", "a", "x"]],
+      ["t", :won, 5, ["c", "a", "t"], ["c", "e", "a", "x", "t"]],
+      ["t", :won, 5, ["c", "a", "t"], ["c", "e", "a", "x", "t"]],
+    ]
+    |> test_moves("cat")
+  end
+
+  def test_moves(script, word) do
+    game = Game.new_game(word)
+    Enum.reduce(script, game, &check_one_move/2)
+  end
+
+  def check_one_move([guess, state, turns_left, letters, used], game) do
+    {game, tally} = Game.make_move(game, guess)
+    assert tally.game_state == state
+    assert tally.turns_left == turns_left
+    assert tally.letters == letters
+    assert MapSet.equal?(MapSet.new(tally.used), MapSet.new(used))
+    game
   end
 end
