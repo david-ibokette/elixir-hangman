@@ -85,7 +85,7 @@ defmodule Hangman.Impl.Game do
 
   ##################################################
 
-  defp tally(game) do
+  def tally(game) do
     %{
       turns_left: game.turns_left,
       game_state: game.game_state,
@@ -93,6 +93,8 @@ defmodule Hangman.Impl.Game do
       used: game.used |> MapSet.to_list |> Enum.sort,
     }
   end
+
+  ##################################################
 
   defp return_with_tally(game) do
     { game, tally(game)}
