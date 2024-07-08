@@ -200,7 +200,7 @@ defmodule ImplGameTest do
       ["f", :bad_guess, 3, ["c", "a", "_"], ["c", "z", "a", "x", "e", "f"]],
       ["g", :bad_guess, 2, ["c", "a", "_"], ["c", "z", "a", "x", "e", "f", "g"]],
       ["h", :bad_guess, 1, ["c", "a", "_"], ["c", "z", "a", "x", "e", "f", "g", "h"]],
-      ["i", :lost, 0, ["c", "a", "_"], ["c", "z", "a", "x", "e", "f", "g", "h", "i"]],
+      ["i", :lost, 0, ["c", "a", "t"], ["c", "z", "a", "x", "e", "f", "g", "h", "i"]],
     ]
     |> test_moves("cat")
   end

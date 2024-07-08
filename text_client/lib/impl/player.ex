@@ -14,18 +14,21 @@ defmodule TextClient.Impl.Player do
     IO.puts("You win!!! ☮")
   end
 
-  def interact( {game, _tally = %{ game_state: :lost }}) do
-    IO.puts("Sorry u lost, the word was #{game.letters |> Enum.join}")
+  def interact( {_game, tally = %{ game_state: :lost }}) do
+    IO.puts("Sorry u lost, the word was #{tally.letters |> Enum.join}")
   end
 
   @spec interact(state) :: :ok
-  def interact({_game, tally}) do
-    IO.puts feedback_for(tally)
+  def interact({game, tally}) do
     # Feedback
-    # display current work
-    # next guess
-    # make move
-    #interact(state)
+    IO.puts feedback_for(tally)
+
+    # display current word
+    IO.puts current_word(tally)
+
+    # with the guess make move, and then finally interact
+    Hangman.make_move(game, get_guess())
+    |> interact()
   end
 
 
@@ -36,18 +39,6 @@ defmodule TextClient.Impl.Player do
     "Welcome player. I'm thinking of a #{ tally.letters |> length } letter word"
   end
 
-  # defp feedback_for(tally = %{ game_state: :good_guess }) do
-  #   "Good guess! Your guesses look like #{ tally.letters }, and you have #{tally.turns_left} turns left"
-  # end
-
-  # defp feedback_for(tally = %{ game_state: :bad_guess }) do
-  #   "Oh noes! Your guesses STILL look like #{ tally.letters }, and you have #{tally.turns_left} turns left"
-  # end
-
-  # defp feedback_for(tally = %{ game_state: :already_used }) do
-  #   "What are you doing???? You already guessed that letter!"
-  # end
-
   defp feedback_for(%{ game_state: :good_guess }), do: "Good guess"
   defp feedback_for(%{ game_state: :bad_guess }), do: "Sorry, letter not in word"
   defp feedback_for(%{ game_state: :already_used }), do: "You did that already?!?!"
@@ -55,5 +46,21 @@ defmodule TextClient.Impl.Player do
   defp feedback_for(_tally) do
     "How did you get here? Nobody's supposed to be here?!?!"
   end
+  ###########################################
+
+  defp current_word(tally) do
+    [
+      IO.ANSI.format([:cyan, "Word looks like: #{tally.letters |> Enum.join(" ")},"]),
+      IO.ANSI.format([:green, " turns left: #{tally.turns_left},"]),
+      IO.ANSI.format([:blue, " used: #{tally.used |> Enum.join(",")}"]),
+    ]
+  end
+
+  ###########################################
+
+  defp get_guess() do
+    IO.gets("What's your guess? ") |> String.trim() |> String.downcase()
+  end
+
   ###########################################
 end
