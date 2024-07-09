@@ -1,7 +1,7 @@
 defmodule Dictionary do
-  @opaque state :: { list(String.t) }
+  @opaque state :: Dictionary.Impl.WordList.t
 
-  @spec start() :: :ok
+  @spec start() :: state
   defdelegate start(), to: Dictionary.Impl.WordList
 
   @spec random_word(state) :: String.t
