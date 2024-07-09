@@ -11,11 +11,11 @@ defmodule TextClient.Impl.Player do
   end
 
   def interact( {_game, _tally = %{ game_state: :won }}) do
-    IO.puts("You win!!! ☮")
+    IO.puts("You win!!! ☮" |> color_string(:blue_background))
   end
 
   def interact( {_game, tally = %{ game_state: :lost }}) do
-    IO.puts("Sorry u lost, the word was #{tally.letters |> Enum.join}")
+    IO.puts("Sorry u lost, the word was #{tally.letters |> Enum.join}" |> color_string(:red_background))
   end
 
   @spec interact(state) :: :ok
@@ -39,9 +39,9 @@ defmodule TextClient.Impl.Player do
     "Welcome player. I'm thinking of a #{ tally.letters |> length } letter word"
   end
 
-  defp feedback_for(%{ game_state: :good_guess }), do: "Good guess"
-  defp feedback_for(%{ game_state: :bad_guess }), do: "Sorry, letter not in word"
-  defp feedback_for(%{ game_state: :already_used }), do: "You did that already?!?!"
+  defp feedback_for(%{ game_state: :good_guess }), do: "Good guess" |> color_string(:black)
+  defp feedback_for(%{ game_state: :bad_guess }), do: "Sorry, letter not in word" |> color_string(:red)
+  defp feedback_for(%{ game_state: :already_used }), do: "You did that already?!?!" |> color_string(:yellow)
 
   defp feedback_for(_tally) do
     "How did you get here? Nobody's supposed to be here?!?!"
@@ -50,16 +50,26 @@ defmodule TextClient.Impl.Player do
 
   defp current_word(tally) do
     [
-      IO.ANSI.format([:cyan, "Word looks like: #{tally.letters |> Enum.join(" ")},"]),
-      IO.ANSI.format([:green, " turns left: #{tally.turns_left},"]),
-      IO.ANSI.format([:blue, " used: #{tally.used |> Enum.join(",")}"]),
+      "Word looks like: #{tally.letters |> Enum.join(" ")}," |> color_string(:cyan),
+      " turns left: #{tally.turns_left}," |> color_string(:green),
+      " used: #{tally.used |> Enum.join(",")}" |> color_string(:blue),
     ]
   end
 
   ###########################################
 
   defp get_guess() do
-    IO.gets("What's your guess? ") |> String.trim() |> String.downcase()
+    "What's your guess? "
+    |> color_string(:magenta)
+    |> IO.gets()
+    |> String.trim()
+    |> String.downcase()
+  end
+
+  ###########################################
+
+  defp color_string(str, color) do
+      IO.ANSI.format([color, str])
   end
 
   ###########################################
