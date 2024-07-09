@@ -1,16 +1,9 @@
 defmodule Dictionary do
-  @word_list "assets/words.txt"
-    |> File.read!()
-    |> String.split(~r/\n/, trim: true)
+  @opaque state :: { list(String.t) }
 
-  # def word_list do
-  #   "assets/words.txt"
-  #   |> File.read!()
-  #   |> String.split(~r/\n/, trim: true)
-  # end
+  @spec start() :: :ok
+  defdelegate start(), to: Dictionary.Impl.WordList
 
-  def random_word do
-    @word_list
-    |> Enum.random()
-  end
+  @spec random_word(state) :: String.t
+  defdelegate random_word(state), to: Dictionary.Impl.WordList
 end
