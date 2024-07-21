@@ -1,9 +1,6 @@
 defmodule Dictionary do
-  @opaque state :: Dictionary.Impl.WordList.t
+  alias Dictionary.Runtime.Server
 
-  @spec start() :: state
-  defdelegate start(), to: Dictionary.Impl.WordList
-
-  @spec random_word(state) :: String.t
-  defdelegate random_word(state), to: Dictionary.Impl.WordList
+  @spec random_word() :: String.t
+  defdelegate random_word(), to: Server
 end
