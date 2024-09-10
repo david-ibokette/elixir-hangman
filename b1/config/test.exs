@@ -4,7 +4,7 @@ import Config
 # you can enable the server option below.
 config :b1, B1Web.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
-  secret_key_base: "r5EJxjW2NGlm3iK08XJnaeioqHgam75iiqGXYD8g2pSOj28NCL+qRciJ0/ula5Gb",
+  secret_key_base: "FurF8TD6HOrEVvqLBpyIYTCYauK40IEVbjg/1FXZ8d4aGJObSM0KEdboSQg0HgDS",
   server: false
 
 # Print only warnings and errors during test
