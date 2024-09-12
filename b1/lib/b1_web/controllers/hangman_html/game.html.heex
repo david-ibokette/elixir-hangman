@@ -10,7 +10,7 @@ This is the game
 	Word so far: <%= @tally.letters |> Enum.join(" ") %>
 </p>
 
- <.form :let={f} for={%{}} as={:make_move} action={~p"/hangman"} method="put">
+ <.form :let={f} for={%{}} as={:make_move} action={~p"/hangman"} method="put"/>
    <.input field={f[:guess]} />
    <.button>Make next guess</.button>
  </.form>
