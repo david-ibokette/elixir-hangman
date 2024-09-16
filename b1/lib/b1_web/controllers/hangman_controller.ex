@@ -14,18 +14,25 @@ defmodule B1Web.HangmanController do
 
     conn
     |> put_session(:game, game)
-    |> render(:game, tally: tally)
+    |> redirect(to: ~p"/hangman/current")
   end
 
   def update(conn, params) do
     guess = params["make_move"]["guess"]
 
-    tally = conn
+    conn
     |> get_session(:game)
     |> Hangman.make_move(guess)
 
     put_in(conn.params["make_move"]["guess"], "")
-    |> render(:game, tally: tally)
-    # raise inspect(params)
+    |> redirect(to: ~p"/hangman/current")
   end
+
+  def show(conn, _params) do
+    tally = conn
+            |> get_session(:game)
+            |> Hangman.tally()
+    render(conn, :game, tally: tally)
+  end
+
 end
