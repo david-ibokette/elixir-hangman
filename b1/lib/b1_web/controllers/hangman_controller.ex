@@ -9,8 +9,6 @@ defmodule B1Web.HangmanController do
 
   def new(conn, _params) do
     game = Hangman.new_game()
-    game |> dbg
-    tally = Hangman.tally(game)
 
     conn
     |> put_session(:game, game)
