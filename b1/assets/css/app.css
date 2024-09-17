@@ -3,3 +3,31 @@
 @import "tailwindcss/utilities";
 
 /* This file is for your main application CSS */
+.tally th {
+    font-weight: normal;
+    text-align: left;
+    color: #aaa
+}
+
+.tally td {
+    font-weight: bold;
+    font-size: 1rem;
+    letter-spacing: 0.15rem;
+}
+
+#make_move_guess {
+    max-width: 3em;
+    font-size: 1em;
+    font-weight: bold;
+}
+
+.status {
+    margin-bottom: 3vh;
+}
+
+.status.initializing { color: #d884c5 }
+.status.good-guess   { color: green }
+.status.bad-guess    { color: coral }
+.status.won          { color: darkgreen; font-weight: bold }
+.status.lost         { color: crimson; font-weight: bold }
+.status.already-used { color: #caa }
