@@ -1,0 +1,13 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+/* This file is for your main application CSS */
+.one-letter {color: #8888bb;}
+.one-letter.correct {color: #88bb88;}
+
+.letters .one-letter {
+    width: 1em;
+    display: inline-block;
+    font-size: 300%;
+}
